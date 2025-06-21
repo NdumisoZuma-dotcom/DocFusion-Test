@@ -1,0 +1,37 @@
+trigger:
+- main  # Or your desired branch
+
+variables:
+  # These values can be overridden in pipeline UI or through variable groups
+  environment: 'dev'                    # Options: dev, test, prod
+  location: 'eastus'                   # Azure region
+  resourcePrefix: 'docfusiondev'       # Resource prefix (must be at least 3 characters)
+  allowedIP: '197.87.34.10'            # Replace with your public IP
+
+stages:
+- stage: DeployInfra
+  displayName: 'Deploy Azure Infrastructure'
+  jobs:
+  - job: DeployBicep
+    displayName: 'Deploy Bicep Template'
+    pool:
+      vmImage: 'ubuntu-latest'
+
+    steps:
+    - task: AzureCLI@2
+      name: deploy
+      inputs:
+        azureSubscription: '<your-service-connection-name>'  # Replace in DevOps project
+        scriptType: bash
+        scriptLocation: inlineScript
+        inlineScript: |
+          echo "🔁 Starting deployment for environment: ${{ variables.environment }}"
+          
+          az deployment group create \
+            --name "${{ variables.environment }}-deployment" \
+            --resource-group "${{ variables.resourcePrefix }}-rg" \
+            --template-file ./Docufusion-Infra.bicep \
+            --parameters resourcePrefix=${{ variables.resourcePrefix }} \
+                         location=${{ variables.location }} \
+                         allowedIP=${{ variables.allowedIP }}
+        workingDirectory: $(System.DefaultWorkingDirectory)
