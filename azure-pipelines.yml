@@ -6,7 +6,7 @@ variables:
   environment: 'dev'                    # Options: dev, test, prod
   location: 'eastus'                   # Azure region
   resourcePrefix: 'docfusiondev'       # Resource prefix (must be at least 3 characters)
-  allowedIP: '197.87.34.10'            # Replace with your public IP
+  allowedIP: '154.119.72.126'            # Replace with your public IP
 
 stages:
 - stage: DeployInfra
@@ -21,7 +21,7 @@ stages:
     - task: AzureCLI@2
       name: deploy
       inputs:
-        azureSubscription: '<your-service-connection-name>'  # Replace in DevOps project
+        azureSubscription: 'Docfusion-test'  # Replace in DevOps project
         scriptType: bash
         scriptLocation: inlineScript
         inlineScript: |
